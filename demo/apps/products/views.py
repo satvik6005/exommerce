@@ -41,9 +41,11 @@ class CreateCartView(CreateAPIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
 
-class RetrieveCartView(RetrieveAPIView):
+class RetrieveCartView(ListAPIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user']
 
 class CreateProductImageView(CreateAPIView):
     queryset = ProductImage.objects.all()
@@ -59,7 +61,7 @@ class RetrieveOrderView(RetrieveAPIView):
     serializer_class = OrderSerializer
   
 class ListOrderView(ListAPIView):
-    ueryset = Order.objects.all()
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['user']
