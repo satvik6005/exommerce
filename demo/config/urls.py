@@ -17,8 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from django.urls import path
-from apps.products.views import CreateUserView, RetrieveUserView, CreateAddressView, RetrieveAddressView, \
+from products.views import CreateUserView, RetrieveUserView, CreateAddressView, RetrieveAddressView, \
     CreateProductView, RetrieveProductView, CreateCartView, RetrieveCartView, \
     CreateProductImageView, RetrieveProductImageView,\
     RetrieveOrderView, \
