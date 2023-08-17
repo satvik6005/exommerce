@@ -26,10 +26,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = Product_image
         fields = '__all__'
 
-class PaymentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Payment
-        fields = '__all__'
+
+
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
