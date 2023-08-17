@@ -145,10 +145,12 @@ class order(models.Model):
     status=models.CharField(max_length=20,choices=del_status,default="2")
     date=models.DateTimeField(default=timezone.now())
     order_placed=models.BooleanField(default=0)
+    expired=models.BooleanField(default=0)
 
 class product_order(models.Model):
     order=models.ForeignKey(order,on_delete=models.CASCADE)
     product=models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
+    quantity=models.PositiveIntegerField()
 
 
 

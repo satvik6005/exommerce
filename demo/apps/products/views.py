@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import F
 import secrets
+from .tasks import check_order
 # Create your views here.
 
 class CreateUserView(CreateAPIView):
@@ -94,18 +95,23 @@ class order_view(APIView):
                         if i.available_units<j["quantity"]:
                             raise ValueError('not enough quantity')
             final_price=0
+            product_order_list=[]
+            Order=order.objects.create(user=user,del_adress=adress.objects.get(id=request.data.get('del_adress')),final_price=final_price,secret_key=secrets.token_urlsafe(20))
             for i in products:
                 for j in products_to_buy:
                     if i.id==j["product"]:
                         Product.objects.filter(id=i.id).update(available_units=F('available_units')-j["quantity"])
                         final_price+=i.price_per_unit*j['quantity']
+                        product_order_list.append(product_order(order=Order,product=i,quantity=j['quantity']))
             print(f"products decremented adn inal price calculated {final_price}")
             
-            Order=order.objects.create(user=user,del_adress=adress.objects.get(id=request.data.get('del_adress')),final_price=final_price,secret_key=secrets.token_urlsafe(20))
-            product_order_list=[]
-            for product in products:
-                product_order_list.append(product_order(order=Order,product=product))
+            
+            
+            
+                
             product_order.objects.bulk_create(product_order_list)
+            print(check_order.apply_async((Order.order_id,),countdown=5,expires=10))
+
                 
 
             
@@ -116,7 +122,8 @@ class order_view(APIView):
             
             
             
-            return Response({"url":f"http://127.0.0.1:8000/order-confirm?order={Order.order_id}&token={Order.secret_key}"},status=200)
+            return Response({"url":f"http://127.0.0.1:8000/order_confirm?order={Order.order_id}&token={Order.secret_key}"},status=200)
+
             
             
         except Exception as e:
@@ -129,6 +136,8 @@ class order_confirm(APIView):
             order_id=request.query_params.get('order')
             secret=request.query_params.get('token')
             Order=order.objects.get(order_id=order_id)
+            if Order.expired==1:
+                return Response({'error':'order expired place again'},status=400)
             if Order.secret_key==secret:
                 Order.order_placed=1
                 Order.save()
@@ -137,6 +146,7 @@ class order_confirm(APIView):
                 return Response({'error':'order not placed'},status=400)
         except Exception as e:
             return Response({'error':str(e)},status=400)
+        
 
 
 
