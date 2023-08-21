@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'products',
-    'rest_framework'
+    'rest_framework',
+    'knox'
 ]
 
 MIDDLEWARE = [
@@ -79,7 +80,14 @@ REST_FRAMEWORK = {
 	'DEFAULT_FILTER_BACKENDS':(
 		'django_filters.rest_framework.DjangoFilterBackend',
 		'rest_framework.filters.SearchFilter',)
+
 	,
+
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    #   'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ],
+
 }
 
 
