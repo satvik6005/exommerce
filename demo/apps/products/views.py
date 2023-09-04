@@ -26,9 +26,10 @@ class Registration_view(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
+            "id":user.id,   
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "token": AuthToken.objects.create(user)[1]
-        })
+        },status=201)
 
 
 class LoginAPI(GenericAPIView):
@@ -39,10 +40,17 @@ class LoginAPI(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
         return Response({
+            "id":user.id,
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "token": AuthToken.objects.create(user)[1]
         })
 
+
+class update_user_view(UpdateAPIView):
+    serializer_class=UserUpdateserializer
+    queryset = User.objects.all()
+
+    permission_class=[IsAuthenticated]
 
 class RetrieveUserView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
@@ -55,9 +63,10 @@ class CreateAddressView(CreateAPIView):
     queryset = adress.objects.all()
     serializer_class = AddressSerializer
 
-class RetrieveAddressView(RetrieveAPIView):
+class RetrieveAddressView(ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = adress.objects.all()
+    lookup_field='user'
     serializer_class = AddressSerializer
 
 class CreateProductView(CreateAPIView):
@@ -112,7 +121,7 @@ class ListOrderView(ListAPIView):
 
 
 class order_view(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
     def post(self,request):
         try:
             user=request.user

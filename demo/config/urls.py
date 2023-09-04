@@ -28,6 +28,7 @@ urlpatterns = [
     path('logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
     path('api/auth/', include('knox.urls')),
     path('users/<int:pk>/', RetrieveUserView.as_view(), name='retrieve_user'),
+    path('users/update/<int:pk>/',update_user_view.as_view(),name='update user'),
 
     path('addresses/create/', CreateAddressView.as_view(), name='create_address'),
     path('addresses/<int:pk>/', RetrieveAddressView.as_view(), name='retrieve_address'),

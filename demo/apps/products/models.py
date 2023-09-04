@@ -121,7 +121,7 @@ class Product(models.Model):
 class cart(models.Model):
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
-    quantity=models.PositiveIntegerField()
+    quantity=models.PositiveIntegerField(default=1)
 
     @staticmethod
     def cart_product(id):
