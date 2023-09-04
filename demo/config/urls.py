@@ -26,12 +26,12 @@ urlpatterns = [
     path('login/', LoginAPI.as_view()),
     path('register/', Registration_view.as_view()),
     path('logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
-    path('api/auth/', include('knox.urls')),
-    path('users/<int:pk>/', RetrieveUserView.as_view(), name='retrieve_user'),
-    path('users/update/<int:pk>/',update_user_view.as_view(),name='update user'),
+    path('users/', RetrieveUserView.as_view(), name='retrieve_user'),
+    path('users/update/',update_user_view.as_view(),name='update user'),
+    path('users/delete/',delete_user.as_view(),name='delete user'),
 
     path('addresses/create/', CreateAddressView.as_view(), name='create_address'),
-    path('addresses/<int:pk>/', RetrieveAddressView.as_view(), name='retrieve_address'),
+    path('addresses/', RetrieveAddressView.as_view(), name='retrieve_address'),
 
     path('products/create/', CreateProductView.as_view(), name='create_product'),
     path('products/<int:pk>/', RetrieveProductView.as_view(), name='retrieve_product'),

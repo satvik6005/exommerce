@@ -3,7 +3,7 @@ from .models import order,Product,product_order
 from django.db.models import F
 
 @app.task
-def check_order(    order_id):
+def check_order(order_id):
     print("task is running")
     Order=order.objects.get(order_id=order_id)
     if Order.order_placed==0:

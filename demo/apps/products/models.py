@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy  as _
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager
+from django.db.models import  QuerySet,Manager
+
 
 user_choices=(
     ("1","customer"),
@@ -16,7 +18,59 @@ del_status=(
 )
 
 
-class UserManager(BaseUserManager):
+class BaseModel(models.Model):
+    class Meta:
+        abstract = True
+
+    is_deleted = models.BooleanField(default=False)
+
+    def delete(self):
+        """Mark the record as deleted instead of deleting it""" 
+
+        self.is_deleted = True
+        self.save()
+    def restore(self):
+        self.is_deleted=False
+        self.save()
+
+    
+
+
+
+
+    
+class AppQuerySet(QuerySet):
+    def delete(self):
+        """ use to delete users """
+        self.update(is_deleted=True)
+
+    def restore_deleted(self):
+        """ use to restore deleted users"""
+        if self.is_deleted==False:
+            raise ValueError('the object is not deleted')
+        
+        self.update(is_deleted=False)
+
+
+class soft_delete_manager(models.Manager):
+    def get_queryset(self):
+        """returns a query set for all the no deleted user"""
+        return AppQuerySet(self.model, using=self._db).exclude(is_deleted=True)
+    
+    def filter_deleted(self,**kwargs):
+        """returns a query set with filter for deleted user"""
+        return AppQuerySet(self.model, using=self.db).exclude(is_deleted=False).filter(**kwargs)
+    def get_deleted(self,**kwargs):
+        """
+        returns specific deleted users
+        """
+        return AppQuerySet(self.model, using=self.db).exclude(is_deleted=False).get(**kwargs)
+    
+    
+    
+
+
+class UserManager(soft_delete_manager,BaseUserManager):
     def _create_user(self, email, username="", password=None, **extra_fields):
         """
         Creates and saves a User with the given email and password.
@@ -55,7 +109,7 @@ class UserManager(BaseUserManager):
         return self._create_user(email, username, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(BaseModel,AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         _("email address"), unique=True, blank=False, max_length=254, validators=[]
     )

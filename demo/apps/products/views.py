@@ -3,7 +3,6 @@ from rest_framework.generics import *
 from rest_framework.filters import SearchFilter
 from .serializer import *
 from .models import *
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import F
@@ -47,15 +46,46 @@ class LoginAPI(GenericAPIView):
 
 
 class update_user_view(UpdateAPIView):
-    serializer_class=UserUpdateserializer
-    queryset = User.objects.all()
-
-    permission_class=[IsAuthenticated]
-
-class RetrieveUserView(RetrieveAPIView):
+    serializer_class = UserUpdateserializer
     permission_classes = [IsAuthenticated]
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+
+    def get_object(self):
+        # Get the user profile of the currently authenticated user
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data, status=200)
+
+    
+
+
+class delete_user(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def delete(self,request):
+   
+        user=request.user
+        print(user)
+        if user is not None:
+            user.delete()
+            return Response({"success":"user deleted successfully"},status=200)
+        return Response({'error':"user does't exist"},status=404)
+
+class RetrieveUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        serializer_class = UserSerializer
+        user=request.user
+        if request.user is not None:
+            return Response(serializer_class(user).data,status=200)
+        return Response({'error':"user does't exist"},status=404)
+    
 
 
 class CreateAddressView(CreateAPIView):
@@ -65,9 +95,10 @@ class CreateAddressView(CreateAPIView):
 
 class RetrieveAddressView(ListAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = adress.objects.all()
-    lookup_field='user'
     serializer_class = AddressSerializer
+
+    def get_queryset(self):
+        return adress.objects.filter(user=self.request.user)
 
 class CreateProductView(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -82,7 +113,7 @@ class ProductSearchView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['name'] 
+    search_fields = ['name','desc'] 
 
 class CreateCartView(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -91,10 +122,11 @@ class CreateCartView(CreateAPIView):
 
 class RetrieveCartView(ListAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = cart.objects.all()
     serializer_class = CartSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['user']
+    def get_queryset(self):
+        return cart.objects.filter(user=self.request.user)
+    
+    
 
 class CreateProductImageView(CreateAPIView):
     queryset = Product_image.objects.all()
@@ -112,16 +144,14 @@ class RetrieveOrderView(RetrieveAPIView):
   
 class ListOrderView(ListAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = order.objects.all()
     serializer_class = OrderSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['user']
-
+    def get_queryset(self):
+        return order.objects.filter(user=self.request.user)
 
 
 
 class order_view(APIView):
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
             user=request.user
@@ -156,7 +186,7 @@ class order_view(APIView):
             response['products']=products_to_buy
 
             response['final_price']=final_price
-            response['del_adress']=request.data.get('del_adress')
+            response['del_adress']=request.data['del_adress']
             
 
             return Response(response,status=200)
@@ -208,7 +238,7 @@ class checkout_view(APIView):
                     print(product_order_list)
                     product_order.objects.bulk_create(product_order_list)
                     print("runing")
-                    print(check_order.apply_async((Order.order_id,),countdown=2,expires=23))
+                    print(check_order.apply_async((Order.order_id,),countdown=240,expires=245))
                     return Response({"url":f"http://127.0.0.1:8000/order_confirm?order={Order.order_id}&token={Order.secret_key}"},status=200)
 
                     
@@ -229,6 +259,7 @@ class order_confirm(APIView):
                 return Response({'error':'order expired place again'},status=400)
             if Order.secret_key==secret:
                 Order.order_placed=1
+                Order.expired=1
                 Order.save()
                 return Response({'success':'order created'},status=201)
             else:
