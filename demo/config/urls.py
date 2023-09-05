@@ -49,5 +49,6 @@ urlpatterns = [
     path('orders/', ListOrderView.as_view(), name='order_list'),
     path('order/',order_view.as_view(),name='order_view'),
     path('checkout/',checkout_view.as_view(),name='checkout'),
-    path('order_confirm/',order_confirm.as_view(),name='order_confirm')
+    path('order_confirm/',order_confirm.as_view(),name='order_confirm'),
+    path('invoice/',invoice_genration.as_view(),name='invoice genration')
 ]

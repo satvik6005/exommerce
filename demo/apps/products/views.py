@@ -11,7 +11,7 @@ from .tasks import check_order
 from knox.models import AuthToken
 from rest_framework.permissions import IsAuthenticated
 import json
-
+from .utils import *
 # Create your views here.
 
 
@@ -24,6 +24,12 @@ class Registration_view(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        email_factory = UserConfirmationEmailFactory.from_request(
+            self.request, user=user
+        )
+        
+        email = email_factory.create()
+        email.send()
         return Response({
             "id":user.id,   
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
@@ -234,7 +240,7 @@ class checkout_view(APIView):
                     for i in products:
                         for j in products_to_buy:
                             if i.id==j['product']:
-                                product_order_list.append(product_order(order=Order,product=i,quantity=j['quantity']))
+                                product_order_list.append(product_order(order=Order,product=i,quantity=j['quantity'],price=j['quantity']*i.price_per_unit))
                     print(product_order_list)
                     product_order.objects.bulk_create(product_order_list)
                     print("runing")
@@ -266,6 +272,27 @@ class order_confirm(APIView):
                 return Response({'error':'order not placed'},status=400)
         except Exception as e:
             return Response({'error':str(e)},status=400)
+        
+
+class invoice_genration(APIView):
+    def post(self,request):
+        try:
+            if request.user is None:
+                raise ValueError("invalid user")
+            user=request.user
+            Order=request.data['order']
+            Order=order.objects.get(order_id=Order)
+            email_factory = order_invoice_genration_mail.from_request(
+                self.request, user=user
+            )
+       
+            email_factory.get_order(Order)
+            email = email_factory.create()
+            output=email.send()
+            return Response({'success':'invoice sent'},status=201)
+        except Exception as e:
+            return Response({'error':str(e)},status=400)
+    
         
 
 

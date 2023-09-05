@@ -62,7 +62,7 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,6 +74,22 @@ TEMPLATES = [
         },
     },
 ]
+
+
+
+ACCOUNTS = {
+    "DOMAIN": 'sandboxbcb2acb5608e46d8a32f761c0bd4cc12.mailgun.org',
+    "SITE_NAME": "ecommerce",
+    "ACTIVATION_URL": "users/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "reset/{uid}-{token}/",
+}
+DEFAULT_FROM_EMAIL = "satvik.goyal@scalereal.com"
+
+EMAIL_HOST = "smtp.mailgun.org"
+EMAIL_HOST_USER = 'postmaster@sandboxbcb2acb5608e46d8a32f761c0bd4cc12.mailgun.org'
+EMAIL_HOST_PASSWORD = "71007c22d818eda0d2fbb734983551f9-7ca144d2-6ee0d342"
+EMAIL_PORT = 587
+
 
 REST_FRAMEWORK = {
     

@@ -158,6 +158,9 @@ class adress(models.Model):
     city=models.CharField(max_length=255)
     state=models.CharField(max_length=255)
 
+    def __str__(self):
+        return str(self.zipcode)+"  "+str(self.houseno)+"  "+str(self.locality)+"  "+str(self.city)+"  "+str(self.state)
+
 class Product(models.Model):
     id=models.AutoField(primary_key=True)
     name=models.CharField(max_length=200)
@@ -165,6 +168,9 @@ class Product(models.Model):
     available_units=models.PositiveIntegerField(default=0)
     price_per_unit=models.PositiveIntegerField(null=True)
     supplier=models.ForeignKey(User,null=True,on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return str(self.name)
 
     @staticmethod
     def get_products(key):
@@ -204,6 +210,7 @@ class order(models.Model):
 class product_order(models.Model):
     order=models.ForeignKey(order,on_delete=models.CASCADE)
     product=models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
+    price=models.PositiveBigIntegerField()
     quantity=models.PositiveIntegerField()
 
 
