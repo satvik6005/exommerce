@@ -82,6 +82,27 @@ class delete_user(APIView):
             user.delete()
             return Response({"success":"user deleted successfully"},status=200)
         return Response({'error':"user does't exist"},status=404)
+    
+
+class ChangePasswordView(APIView):
+    """
+    Use this endpoint to change user password.
+    """
+
+    permission_classes = (IsAuthenticated,)
+    
+
+    def post(self, request):
+        serializer= serializers.ResetPasswordSerializer
+        serializer.validate_data(raise_exception=True)
+        self.request.user.set_password(serializer.data["new_password"])
+        self.request.user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+
+
+
 
 class RetrieveUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -171,7 +192,8 @@ class order_view(APIView):
             elif request.data.get('cart')==False:
                 products=Product.objects.filter(id=request.data.get('product'))
                 products_to_buy=[dict({'product':request.data.get('product'),'quantity':request.data.get('quantity')})]
-            print(products,products_to_buy)
+            if not adress.objects.filter(id=request.data['del_adress']).exists() :
+                raise ValueError("invalid adress")
             final_price=0
             for i in products:
                 for j in products_to_buy:
@@ -288,6 +310,7 @@ class invoice_genration(APIView):
        
             email_factory.get_order(Order)
             email = email_factory.create()
+            print(email.__dict__)
             output=email.send()
             return Response({'success':'invoice sent'},status=201)
         except Exception as e:

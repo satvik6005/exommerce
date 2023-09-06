@@ -87,7 +87,7 @@ DEFAULT_FROM_EMAIL = "satvik.goyal@scalereal.com"
 
 EMAIL_HOST = "smtp.mailgun.org"
 EMAIL_HOST_USER = 'postmaster@sandboxbcb2acb5608e46d8a32f761c0bd4cc12.mailgun.org'
-EMAIL_HOST_PASSWORD = "71007c22d818eda0d2fbb734983551f9-7ca144d2-6ee0d342"
+EMAIL_HOST_PASSWORD = "34bb1370d4a29a2f29f7c444059d1a70-7ca144d2-e5a7e028"
 EMAIL_PORT = 587
 
 
@@ -151,8 +151,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+# Define the URL prefix for static files
+STATIC_URL = '/static/'
 
+# Define the absolute filesystem path to the directory where static files will be collected
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Specify the directories where Django should look for static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path,include
 from knox import views as knox_views
 from products.views import *
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
 
@@ -52,3 +53,6 @@ urlpatterns = [
     path('order_confirm/',order_confirm.as_view(),name='order_confirm'),
     path('invoice/',invoice_genration.as_view(),name='invoice genration')
 ]
+
+
+urlpatterns += staticfiles_urlpatterns()
