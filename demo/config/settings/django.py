@@ -13,26 +13,34 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import sys
 import os
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 print(BASE_DIR)
 WSGI_APPLICATION = "config.wsgi.application"
 ROOT_URLCONF = "config.urls"
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 
-
+def get_env_variable(var_name):
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = "Set the %s environment variable" % var_name
+        raise ImproperlyConfigured(error_msg)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!!@^y%ha9j%w*k$=%t9r1)4ha(-uqopgu@qtdub#j@j1x59hw%'
+SECRET_KEY = get_env_variable("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_env_variable("DEBUG")
 
+HOST = get_env_variable("HOST")
 ALLOWED_HOSTS = []
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = get_env_variable("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = get_env_variable("CELERY_RESULT_BACKEND")
 
 # Application definition
 
@@ -79,18 +87,22 @@ TEMPLATES = [
 
 
 
+
+
+
 ACCOUNTS = {
     "DOMAIN": 'scalereal.com',
     "SITE_NAME": "ecommerce",
     "ACTIVATION_URL": "users/{uid}/{token}",
     "PASSWORD_RESET_CONFIRM_URL": "reset/{uid}-{token}/",
 }
-DEFAULT_FROM_EMAIL = "satvik.goyal@scalereal.com"
 
-EMAIL_HOST = "smtp-relay.sendinblue.com"
-EMAIL_HOST_USER = 'satvik.goyal@scalereal.com'
-EMAIL_HOST_PASSWORD = "1Sdb06ncNCELaMY8"
-EMAIL_PORT = 587
+
+DEFAULT_FROM_EMAIL = get_env_variable("DEFAULT_FROM_EMAIL")
+EMAIL_HOST = get_env_variable("EMAIL_HOST")
+EMAIL_HOST_USER = get_env_variable("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = get_env_variable("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = int(get_env_variable("EMAIL_PORT"))
 
 
 REST_FRAMEWORK = {
@@ -110,12 +122,15 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, "db.sqlite3"),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": get_env_variable("DATABASE_NAME"),
+        "USER": get_env_variable("DATABASE_USER"),
+        "PASSWORD": get_env_variable("DATABASE_PASSWORD"),
+        "HOST": get_env_variable("DB_HOST"),
+        "PORT": "5432",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
