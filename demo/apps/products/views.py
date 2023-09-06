@@ -9,9 +9,12 @@ from django.db.models import F
 import secrets
 from .tasks import check_order
 from knox.models import AuthToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 import json
 from .utils import *
+import requests
+from django.urls import reverse
+
 # Create your views here.
 
 
@@ -176,6 +179,52 @@ class ListOrderView(ListAPIView):
         return order.objects.filter(user=self.request.user)
 
 
+class reset_confirm(APIView):
+    
+    template_name = "forgot_password.html"
+
+
+    permission_classes = (AllowAny,)
+
+
+    def get(self, request, *args, **kwargs):
+            return render(
+            request,
+            self.template_name,
+            {"token": request.GET.get('token')},
+        )
+        
+
+    def post(self, request, *args, **kwargs):
+        post_data = {
+            "token": request.GET["token"],
+            "new_password": request.POST["new_password"],
+            "re_new_password": request.POST["re_new_password"],
+        }
+        
+        errors = []
+        success=False
+        if post_data['new_password']!=post_data['re_new_password']:
+            errors.append('password doestt match')
+        else:
+
+            baseurl = request.build_absolute_uri(reverse("password_reset:reset-password-confirm"))
+            headers = {'Content-type': 'application/json'}
+
+            data={"token":post_data['token'],"password":post_data['new_password']}
+            result = requests.post(baseurl, data=json.dumps(data),headers=headers)
+        
+            if result.status_code == 200:
+                success = True
+            else:
+                result_dict = result.json()
+                for key, val in result_dict.items():
+                    errors.append(key + " : ".join(val))
+        return render(
+            request, self.template_name, {"success": success, "errors": errors}
+        )
+
+
 
 class order_view(APIView):
     permission_classes = [IsAuthenticated]
@@ -227,6 +276,11 @@ class order_view(APIView):
         
         except Exception as e:
                     return Response({'error':str(e)},status=400)
+        
+
+
+
+
 
 
 

@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path,include,re_path
 from knox import views as knox_views
 from products.views import *
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -51,8 +51,9 @@ urlpatterns = [
     path('order/',order_view.as_view(),name='order_view'),
     path('checkout/',checkout_view.as_view(),name='checkout'),
     path('order_confirm/',order_confirm.as_view(),name='order_confirm'),
-    path('invoice/',invoice_genration.as_view(),name='invoice genration')
+    path('invoice/',invoice_genration.as_view(),name='invoice genration'),
+    path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+   path("reset",reset_confirm.as_view(),name='confirm_reset')
 ]
 
 
-urlpatterns += staticfiles_urlpatterns()

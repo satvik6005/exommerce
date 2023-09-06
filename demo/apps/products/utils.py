@@ -82,9 +82,6 @@ class UserPasswordResetEmailFactory(UserEmailFactoryBase):
         return context
 
 
-class UserConfirmationEmailFactory(UserEmailFactoryBase):
-    subject_template_name = "confirmation_email_subject.txt"
-    plain_body_template_name = "confirmation_email_body.txt"
 
 class order_invoice_genration_mail(UserEmailFactoryBase):
     html_body_template_name='invoice.html'
