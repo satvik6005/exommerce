@@ -27,14 +27,8 @@ class Registration_view(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        email_factory = UserConfirmationEmailFactory.from_request(
-            self.request, user=user
-        )
-        
-        email = email_factory.create()
-        email.send()
         return Response({
-            "id":user.id,   
+            "id":user.id,
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "token": AuthToken.objects.create(user)[1]
         },status=201)
@@ -71,21 +65,21 @@ class update_user_view(UpdateAPIView):
 
         return Response(serializer.data, status=200)
 
-    
+
 
 
 class delete_user(APIView):
     permission_classes=[IsAuthenticated]
 
     def delete(self,request):
-   
+
         user=request.user
         print(user)
         if user is not None:
             user.delete()
             return Response({"success":"user deleted successfully"},status=200)
         return Response({'error':"user does't exist"},status=404)
-    
+
 
 class ChangePasswordView(APIView):
     """
@@ -93,7 +87,7 @@ class ChangePasswordView(APIView):
     """
 
     permission_classes = (IsAuthenticated,)
-    
+
 
     def post(self, request):
         serializer= serializers.ResetPasswordSerializer
@@ -101,7 +95,7 @@ class ChangePasswordView(APIView):
         self.request.user.set_password(serializer.data["new_password"])
         self.request.user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 
 
 
@@ -115,7 +109,7 @@ class RetrieveUserView(APIView):
         if request.user is not None:
             return Response(serializer_class(user).data,status=200)
         return Response({'error':"user does't exist"},status=404)
-    
+
 
 
 class CreateAddressView(CreateAPIView):
@@ -143,7 +137,7 @@ class ProductSearchView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['name','desc'] 
+    search_fields = ['name','desc']
 
 class CreateCartView(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -155,8 +149,8 @@ class RetrieveCartView(ListAPIView):
     serializer_class = CartSerializer
     def get_queryset(self):
         return cart.objects.filter(user=self.request.user)
-    
-    
+
+
 
 class CreateProductImageView(CreateAPIView):
     queryset = Product_image.objects.all()
@@ -171,7 +165,7 @@ class RetrieveOrderView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     queryset = order.objects.all()
     serializer_class = OrderSerializer
-  
+
 class ListOrderView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
@@ -180,7 +174,7 @@ class ListOrderView(ListAPIView):
 
 
 class reset_confirm(APIView):
-    
+
     template_name = "forgot_password.html"
 
 
@@ -193,7 +187,7 @@ class reset_confirm(APIView):
             self.template_name,
             {"token": request.GET.get('token')},
         )
-        
+
 
     def post(self, request, *args, **kwargs):
         post_data = {
@@ -201,7 +195,7 @@ class reset_confirm(APIView):
             "new_password": request.POST["new_password"],
             "re_new_password": request.POST["re_new_password"],
         }
-        
+
         errors = []
         success=False
         if post_data['new_password']!=post_data['re_new_password']:
@@ -213,7 +207,7 @@ class reset_confirm(APIView):
 
             data={"token":post_data['token'],"password":post_data['new_password']}
             result = requests.post(baseurl, data=json.dumps(data),headers=headers)
-        
+
             if result.status_code == 200:
                 success = True
             else:
@@ -255,7 +249,7 @@ class order_view(APIView):
                             final_price+=j['price']
 
             response=dict()
-            
+
             # Order=OrderSerializer(user=user,del_adress=adress.objects.get(id=request.data.get('del_adress')),final_price=final_price)
 
             # print(f"products decremented and final price calculated {final_price}")
@@ -264,19 +258,19 @@ class order_view(APIView):
 
             response['final_price']=final_price
             response['del_adress']=request.data['del_adress']
-            
+
 
             return Response(response,status=200)
-            
-            
-            
-            
-                
-            
-        
+
+
+
+
+
+
+
         except Exception as e:
                     return Response({'error':str(e)},status=400)
-        
+
 
 
 
@@ -292,9 +286,9 @@ class checkout_view(APIView):
                 try:
                     user=request.user
                     products_to_buy=request.data['products']
-                    
+
                     products=Product.get_products([i['product'] for i in products_to_buy])
-                    
+
                     print(products,products_to_buy)
                     final_price=0
                     for i in products:
@@ -323,8 +317,8 @@ class checkout_view(APIView):
                     print(check_order.apply_async((Order.order_id,),countdown=240,expires=245))
                     return Response({"url":f"http://127.0.0.1:8000/order_confirm?order={Order.order_id}&token={Order.secret_key}"},status=200)
 
-                    
-                    
+
+
                 except Exception as e:
                     return Response({'error':str(e)},status=400)
 
@@ -348,7 +342,7 @@ class order_confirm(APIView):
                 return Response({'error':'order not placed'},status=400)
         except Exception as e:
             return Response({'error':str(e)},status=400)
-        
+
 
 class invoice_genration(APIView):
     def post(self,request):
@@ -361,7 +355,7 @@ class invoice_genration(APIView):
             email_factory = order_invoice_genration_mail.from_request(
                 self.request, user=user
             )
-       
+
             email_factory.get_order(Order)
             email = email_factory.create()
             print(email.__dict__)
@@ -369,17 +363,3 @@ class invoice_genration(APIView):
             return Response({'success':'invoice sent'},status=201)
         except Exception as e:
             return Response({'error':str(e)},status=400)
-    
-        
-
-
-
-
-
-
-
-
-
-
-    
-

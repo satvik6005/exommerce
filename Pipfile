@@ -7,6 +7,9 @@ name = "pypi"
 django = "*"
 black = "*"
 ipdb = "*"
+django-rest-passwordreset = "*"
+psycopg2-binary = "*"
+pre-commit = "*"
 
 [dev-packages]
 
