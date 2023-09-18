@@ -172,6 +172,24 @@ class ListOrderView(ListAPIView):
     def get_queryset(self):
         return order.objects.filter(user=self.request.user)
 
+class ChangePasswordView(APIView):
+    """
+    Use this endpoint to change user password.
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+
+    def post(self, request):
+        try:
+            serializer= ResetPasswordSerializer(data=request.data)
+            if serializer.is_valid() and serializer.check_user_current_password(request,serializer.data['current_password']):
+                self.request.user.set_password(serializer.data["new_password"])
+                self.request.user.save()
+            return Response({"success":"passwor changed"},status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({"error":str(e)},status=400)
+
 
 class reset_confirm(APIView):
 

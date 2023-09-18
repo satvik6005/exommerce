@@ -53,7 +53,6 @@ urlpatterns = [
     path('order_confirm/',order_confirm.as_view(),name='order_confirm'),
     path('invoice/',invoice_genration.as_view(),name='invoice genration'),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
-   path("reset",reset_confirm.as_view(),name='confirm_reset')
+   path("reset",reset_confirm.as_view(),name='confirm_reset'),
+   path("change_password/",ChangePasswordView.as_view(),name='change_password'),
 ]
-
-

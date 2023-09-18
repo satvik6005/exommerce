@@ -14,7 +14,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
                                         None,
                                         validated_data['password'])
         return user
-    
+
+
+
 
 
 class LoginUserSerializer(serializers.Serializer):
@@ -26,20 +28,19 @@ class LoginUserSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Invalid Details.")
-    
+
+
 
 class ResetPasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField(style={"input_type": "password"})
     new_password = serializers.CharField(style={"input_type": "password"})
     re_new_password = serializers.CharField(style={"input_type": "password"})
 
-    default_error_messages = {
-        "invalid_password": constants.INVALID_PASSWORD_ERROR,
-        "password_mismatch": constants.PASSWORD_MISMATCH_ERROR,
-    }
 
-    def validate_current_password(self, value):
-        if not self.context["request"].user.check_password(value):
+
+    def check_user_current_password(self, request,value):
+
+        if not request.user.check_password(value):
             raise serializers.ValidationError(self.error_messages["invalid_password"])
         return value
 
@@ -47,7 +48,9 @@ class ResetPasswordSerializer(serializers.Serializer):
         if attrs["new_password"] != attrs["re_new_password"]:
             raise serializers.ValidationError(self.error_messages["password_mismatch"])
         return attrs
-    
+
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     """retrieve details of the user"""
