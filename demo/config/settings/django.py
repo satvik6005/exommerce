@@ -52,10 +52,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'products',
+    'users',
+    'orders',
+    'cart',
+    'billing',
     'rest_framework',
     'knox',
     'django_rest_passwordreset',
-    
+
 ]
 
 MIDDLEWARE = [
@@ -106,9 +110,9 @@ EMAIL_PORT = int(get_env_variable("EMAIL_PORT"))
 
 
 REST_FRAMEWORK = {
-    
-	
-	
+
+
+
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
     #   'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticated',
@@ -135,7 +139,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL='products.User'
+AUTH_USER_MODEL='users.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

@@ -18,6 +18,10 @@ from django.contrib import admin
 from django.urls import path,include,re_path
 from knox import views as knox_views
 from products.views import *
+from users.views import *
+from orders.views import *
+from billing.views import *
+from cart.views import *
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 

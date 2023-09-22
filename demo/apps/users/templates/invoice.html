@@ -1,0 +1,63 @@
+{% load static %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Invoice</title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+		<link rel="license" href="{https://www.opensource.org/licenses/mit-license/}">
+        <p>{% static 'css/style.css' %}</p>
+		<script src="{% static 'js/script.js' %}"></script>
+	</head>
+	<body>
+		<header>
+			<h1>Invoice</h1>
+			<address contenteditable>
+				<p>{{ user }}</p>
+				<p>{{ adress }}</p><br>
+			</address>
+		</header>
+		<article>
+			<h1>Recipient</h1>
+			<address contenteditable>
+				<p>ecommerce</p>
+			</address>
+			<table class="meta">
+				<tr>
+					<th><span contenteditable>Invoice #</span></th>
+					<td><span contenteditable>{{order_id}}</span></td>
+				</tr>
+				<tr>
+					<th><span contenteditable>Date</span></th>
+					<td><span contenteditable>{{ order_date }}</span></td>
+				</tr>
+
+			</table>
+			<table class="inventory">
+				<thead>
+					<tr>
+						<th><span contenteditable>Item</span></th>
+						<th><span contenteditable>Quantity</span></th>
+						<th><span contenteditable>Price</span></th>
+					</tr>
+				</thead>
+				<tbody>
+                    {% for product in products %}
+					<tr>
+						<td><a class="cut">-</a><span contenteditable>{{ product.product }}</span></td>
+						<td><span contenteditable>{{ product.quantity }}</span></td>
+						<td><span data-prefix>$</span><span>{{ product.price }}</span></td>
+					</tr>
+                    {% endfor %}
+				</tbody>
+			</table>
+			<a class="add">+</a>
+			<table class="balance">
+				<tr>
+					<th><span contenteditable>Total</span></th>
+					<td><span data-prefix>$</span><span>{{ price }}</span></td>
+				</tr>
+			</table>
+		</article>
+
+	</body>
+</html>
