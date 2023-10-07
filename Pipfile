@@ -15,6 +15,7 @@ celery = "*"
 django-rest-framework = "*"
 django-redis = "*"
 django-rest-knox = "*"
+requests = "*"
 
 [dev-packages]
 
