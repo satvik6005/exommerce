@@ -22,8 +22,10 @@ from users.views import *
 from orders.views import *
 from billing.views import *
 from cart.views import *
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
+from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
+from products.schema import schema as product_schema
+from cart.schema import schema as cart_schema
 
 
 urlpatterns = [
@@ -37,6 +39,8 @@ urlpatterns = [
 
     path('addresses/create/', CreateAddressView.as_view(), name='create_address'),
     path('addresses/', RetrieveAddressView.as_view(), name='retrieve_address'),
+    path('products/graphql',csrf_exempt(GraphQLView.as_view(graphiql=True,schema=product_schema))),
+    path('carts/graphql',csrf_exempt(GraphQLView.as_view(graphiql=True,schema=cart_schema))),
 
     path('products/create/', CreateProductView.as_view(), name='create_product'),
     path('products/<int:pk>/', RetrieveProductView.as_view(), name='retrieve_product'),

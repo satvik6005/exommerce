@@ -10,6 +10,8 @@ ipdb = "*"
 django-rest-passwordreset = "*"
 psycopg2-binary = "*"
 pre-commit = "*"
+graphene-django = "*"
+celery = "*"
 
 [dev-packages]
 
