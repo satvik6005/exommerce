@@ -12,6 +12,9 @@ psycopg2-binary = "*"
 pre-commit = "*"
 graphene-django = "*"
 celery = "*"
+django-rest-framework = "*"
+django-redis = "*"
+django-rest-knox = "*"
 
 [dev-packages]
 
