@@ -28,4 +28,5 @@ jobs:
         pipenv install
     - name: Run Tests
       run: |
-        python manage.py test
+        cd demo
+        pipenv python manage.py test
