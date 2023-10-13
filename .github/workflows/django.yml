@@ -29,4 +29,15 @@ jobs:
     - name: Run Tests
       run: |
         cd demo
-        pipenv run python manage.py test
+        pipenv run coverage run manage.py test
+        
+    - name: check code coverage
+      run: |
+        COVERAGE_PERCENTAGE=$(coverage report -m | grep TOTAL | awk '{print $4}' | sed 's/%//')
+        if [ "$COVERAGE_PERCENTAGE" -lt 75 ]; then
+          echo "Code coverage is below 75%. Failing the CI pipeline."
+          exit 1
+        fi
+
+
+    
