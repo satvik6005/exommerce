@@ -10,6 +10,13 @@ ipdb = "*"
 django-rest-passwordreset = "*"
 psycopg2-binary = "*"
 pre-commit = "*"
+graphene-django = "*"
+celery = "*"
+django-rest-framework = "*"
+django-redis = "*"
+django-rest-knox = "*"
+requests = "*"
+coverage = "*"
 
 [dev-packages]
 

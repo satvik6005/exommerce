@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'knox',
     'django_rest_passwordreset',
+    'graphene_django'
 
 ]
 
