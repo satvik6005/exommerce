@@ -17,6 +17,7 @@ django-redis = "*"
 django-rest-knox = "*"
 requests = "*"
 coverage = "*"
+gunicorn = "*"
 
 [dev-packages]
 
