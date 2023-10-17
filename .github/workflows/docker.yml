@@ -20,7 +20,7 @@ jobs:
       env:
           DOCKER_USERNAME: satvik6005
           DOCKER_PASSWORD: Satvik121*
-      run: docker login -u $DOCKER_USERNAME -P $DOCKER_PASSWORD
+      run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - name: Build the docker image
       run: docker build -t cicd .
     - name: push to docker
