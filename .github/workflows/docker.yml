@@ -1,0 +1,27 @@
+name: Django CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Login Docker
+          env:
+            DOCKER_USERNAME: satvik6005
+            DOCKER_PASSWORD: Satvik121*
+          run: docker login -u $DOCKER_USERNAME -P $DOCKER_PASSWORD
+      - name: Build the docker image
+          run: docker build -t cicd .
+      - name: push to docker
+          run: docker push satvik6005/cicd:latest

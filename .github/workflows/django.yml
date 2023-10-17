@@ -1,10 +1,9 @@
 name: Django CI
 
 on:
-  push:
-    branches: [ "main" ]
+
   pull_request:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
 jobs:
   build:
@@ -30,7 +29,7 @@ jobs:
       run: |
         cd demo
         pipenv run coverage run manage.py test
-        
+
     - name: check code coverage
       run: |
         COVERAGE_PERCENTAGE=$(coverage report -m | grep TOTAL | awk '{print $4}' | sed 's/%//')
@@ -38,6 +37,3 @@ jobs:
           echo "Code coverage is below 75%. Failing the CI pipeline."
           exit 1
         fi
-
-
-    

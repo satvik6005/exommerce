@@ -5,7 +5,6 @@ from cart.models import *
 from billing.models import *
 from orders.models import *
 
-
 class ProductModelTestCase(TestCase):
     def setUp(self):
         # Create a user for testing
